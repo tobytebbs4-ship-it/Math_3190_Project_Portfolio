@@ -1,0 +1,37 @@
+project:
+  type: website
+  output-dir: docs
+website:
+  title: "Lab_3"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - about.qmd
+      - href: Homework/HW1/Homework_1.qmd
+        text: Homework 1
+      - href: Homework/HW4/Homework_4.qmd
+        text: Homework 4
+      - href: Homework/HW5/Homework_5.qmd
+        text: Homework 5
+      - href: 'Homework/HW6/Homework 6.qmd'
+        text: Homework 6
+      - href: 'Homework/HW7/Homework 7.qmd'
+        text: Homework 7
+      - href: 'Homework/HW8/Homework 8.qmd'
+        text: Homework 8
+      - href: 'Homework/HW9/Homework 9.qmd'
+        text: Homework 9
+      - href: 'Homework/HW10/Homework 10.qmd'
+        text: Homework 10
+
+format:
+  html:
+    theme:
+      - cosmo
+      - brand
+    css: styles.css
+    toc: true
+
+editor: visual
+

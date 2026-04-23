@@ -1,0 +1,451 @@
+---
+title: "**MATH 3190 Homework 4**"
+subtitle: |
+  Due February 19, 2026\
+  Focus: Notes 6\
+  Total Points: 90 + 10 (Self-Critique Comment and Uploading to GitHub) = 100
+format: 
+  html:
+    embed-resources: true # Keep this so the html file is easily shareable.
+urlcolor: blue
+execute: # Will set these as the default for all code chunks
+  eval: true
+  echo: true
+editor_options: 
+  chunk_output_type: console
+---
+
+Note that your homework should be completed in Quarto. You can just add your answers and code to this document in the appropriate part. The file should be rendered as an html document or pdf document (html is quicker to render and you will need an installation of LaTeX to render as a pdf). You will "turn in" this homework by uploading the files, the .qmd and output file, to your GitHub `Math_3190_Assignment` repository in the `Homework/Homework_4` directory. Make sure all supporting files (if there are any) are in this directory as well. You should use `git` and `Unix` commands in a terminal for this (i.e. don't manually upload files to GitHub). In addition, you will submit just your html or pdf file on Canvas to unlock the solutions.
+
+Don't forget to also put a [self-critique comment]{.underline} on Canvas indicating what you did correctly and incorrectly and include any questions you may have about the assignment after submitting the assignment and thoroughly looking through the solutions.
+
+Some of the parts in this homework, like 1a, 2b, 2c, 3a, and 3b require writing down some math-heavy expressions. You may either type it up using LaTeX-style formatting in Quarto (preferred), or you can write it by hand (neatly) and include pictures or scans of your work in your Quarto document.
+
+# Problem 1 (33 points)
+
+Suppose we want to find the value of $x$ and the objection function value for finding the global maximum and minimum of the function $f(x)=\ln(1+x^2)(1+x)e^{-x^2}$. We will implement gradient descent and Newton's method for finding these extrema.
+
+### Part a (5 points)
+
+Find $f'(x)$ for this function. Do this by hand as a nice derivative refresher. You don't need to include all of your work, though. Feel free to check your answer using something like Wolfram\|Alpha. Write down the derivative here.
+
+$f'(x)=\frac{2x(1+x)e^{-x^2}}{1+x^2}+e^{-x^2}\ln(1+x^2)(1-2x-2x^2)$
+
+### Part b (4 points)
+
+Below is the code of a function that implements gradient descent using a backtracking line search each iteration to find $\gamma_k$: the step size. This function takes eight inputs:
+
+-   The starting value (or vector)
+-   The function to optimize
+-   The function's derivative (or gradient)
+-   A logical indicating if we want to find a max with a default of `FALSE`.
+-   The maximum number of iterations with a default of 200
+-   The initial step size with a default of 1
+-   The line search beta parameter with a default of 0.5.
+-   The stopping tolerance with a default of `1e-10`.
+
+The output of this function is a list with the $x$ value (or vector) that optimizes the function, the function value at that point, and the number of iterations it took to converge. This function works in the case of one dimension or multiple dimensions since you'll use it again in problem 2.
+
+Take a few minutes to study this function to make sure you understand how it works and what it is doing. Write a few sentences explaining how this function works.
+
+```{r}
+#| label: backtracking_function
+#| eval: true
+#| echo: true
+gradient_desc <- function(starting, f, gradient, max = F, maxit = 200, 
+                          step_size = 1, line_parameter = 0.5, tol = 1e-10) {
+  if(max == T) {
+    obj_func <- function(x) {
+      -f(x)
+    }
+    func_deriv <- function(x) {
+      -gradient(x)
+    }
+  } else {
+    obj_func <- f
+    func_deriv <- gradient
+  }
+  xk <- starting
+  for(k in 1:maxit) {
+    gamma <- step_size
+    line_beta <- line_parameter
+    # Below is the backtracking line search
+    while(obj_func(xk - gamma * func_deriv(xk)) > 
+          obj_func(xk) - gamma/4 * sum(func_deriv(xk)^2)) {
+      gamma <- line_beta * gamma
+    }
+    # Once we have a good step size, continue
+    xnew <- xk - gamma * func_deriv(xk)
+    if(norm(xk - xnew, type = "2") < tol) {
+      break
+    }
+    xk <- xnew
+    }
+  return(list(x = xk, function_val = f(xk), iters = k))
+}
+```
+
+### Part c (5 points)
+
+Use the gradient descent function to find the global **min** of $f(x)=\ln(1+x^2)(1+x)e^{-x^2}$. Try using several starting points. Keep track of and report the number of iterations needed to converge at the different starting points.
+
+```{R}
+f <- function(x){
+  z <- log(1+x^2)*(1+x)*exp(-x^2)
+  return(z)
+}
+
+ddf <- function(x){
+  z <- (2*x*(1+x)*exp(-x^2)/(1+x^2))+exp(-x^2)*log(1+x^2)*(1-(2*x)-(2*x^2))
+  return(z)
+}
+# x = 0, function_val = 0, iters = 1
+gradient_desc(0, f, ddf, max = F, maxit = 200, step_size = 1, line_parameter = 0.5, tol = 1e-10)
+
+# x = 3.347721, function_val = 0.0001476775, iters = 200
+gradient_desc(1, f, ddf, max = F, maxit = 200, step_size = 1, line_parameter = 0.5, tol = 1e-10)
+
+# x = 3.351471, function_val = 0.0001442561, inters = 200
+gradient_desc(2, f, ddf, max = F, maxit = 200, step_size = 1, line_parameter = 0.5, tol = 1e-10)
+
+# x = -5, function_val = -1.809937e-10, iters = 200
+gradient_desc(-5, f, ddf, max = F, maxit = 200, step_size = 0.25, line_parameter = 0.5, tol = 1e-10)
+```
+
+### Part d (4 points)
+
+Use the gradient descent function to find the global **max** of $f(x)=\ln(1+x^2)(1+x)e^{-x^2}$. Again, try several starting points. Keep track of and report the number of iterations needed to converge at the different starting points.
+
+```{R}
+# x = 0, function_val = 0, iters = 1
+gradient_desc(0, f, ddf, max = T, maxit = 200, step_size = 1, line_parameter = 0.5, tol = 1e-10)
+
+# x = 0.9868668, function_val = 0.5101816, iters = 14
+gradient_desc(1, f, ddf, max = T, maxit = 200, step_size = 1, line_parameter = 0.5, tol = 1e-10)
+
+# x = -0.5409866, function_val = 0.08793461, iters = 16
+gradient_desc(-1, f, ddf, max = T, maxit = 200, step_size = 1, line_parameter = 0.5, tol = 1e-10)
+
+# x = 0.9868668, function_val = 0.5101816, iters = 53
+gradient_desc(3, f, ddf, max = T, maxit = 200, step_size = 1, line_parameter = 0.5, tol = 1e-10)
+```
+
+### Part e (8 points)
+
+Use the fact that $$
+f''(x)=\dfrac{2e^{-x^2}}{(1+x^2)^2}\bigg((2x^3+2x^2-3x-1)(1+x^2)^2\ln(1+x^2)-4x^5-4x^4-3x^3-5x^2+3x+1\bigg)
+$$ to implement Newton's method to find the global max **and** the global min. Use the same starting points you did in parts c and d. Keep track of and report the number of iterations needed to converge at the different starting points. And yes, that second derivative is very messy! This is one reason why Newton's method is less popular. You don't have to write a function for this part to implement Newton's method, but you can if you'd like.
+
+```{r}
+d2df <- function(x){
+  z <- (2*exp(-x^2)/(1+x^2)^2)*((((2*x^3)+(2*x^2)-3*x-1)*((1+x^2)^2)*log(1+x^2))-(4*x^5)-(4*x^4)-(3*x^3)-(5*x^2)+3*x+1)
+  return(z)
+}
+# Zero estimate was 0 when xk = 0, -11.3 when xk = -5, -10.9 when xk = -1, 0.987 when xk = 1, 10.46244 when xk = 2, and 10.62335 when x = 3.
+xk <- -1
+maxit <- 100
+iter <- 0
+for(k in 1:maxit) {
+iter <- iter + 1
+xnew <- xk - ddf(xk)/d2df(xk)
+if(abs(xk - xnew) < 1e-10) {
+break
+}
+xk <- xnew
+}
+print(xk)
+print(iter)
+```
+
+### Part f (3 points)
+
+Compare the number of iterations needed for convergence for gradient descent and for Newton's method.
+
+Both functions required only 1 iteration to find the root at the starting point 0. Often, a function couldn't find a root, and maxed out its number of iterations. However, when they could, gradient descent required about 15 iterations to find the root, while newton's method required about 4.
+
+### Part g (4 points)
+
+Use the `optimize()` function in **R** to find the global max and min for the function $f$.
+
+```{R}
+x <- optimize(f, interval = c(-5, 5), tol = 0.0001)
+print(x)
+# min = -1.469434
+
+y <- optimize(f, interval = c(3, 5), maximum = TRUE)
+print(y)
+
+# max = 3.000
+
+```
+
+# Problem 2 (26 points)
+
+Suppose $\boldsymbol{x} = (x_1,\dots, x_n )^T$ are independent and identically distributed random variables with probability density function (pdf) given by $$
+f(x_i|\theta) = \theta(1-x_i)^{\theta-1};\ \ 0\le x_i< 1,\ 0<\theta<\infty,\ i=1,\dots,n
+$$
+
+### Part a (4 points)
+
+Using ggplot, plot the probability density function (pdf) for an individual $x_i$ given $\theta=0.5$ and then again for $\theta=5$.
+
+```{r}
+# Part a: Plot f(x) = theta * (1 - x)^(theta - 1) for theta = 0.5 and theta = 5
+library(ggplot2)
+library(dplyr)
+
+x_grid <- seq(0, 0.999, length.out = 1000) # avoid exactly 1
+df <- bind_rows(
+  data.frame(x = x_grid, theta = 0.5),
+  data.frame(x = x_grid, theta = 5)
+)
+
+df <- df %>%
+  mutate(pdf = theta * (1 - x)^(theta - 1))
+
+ggplot(df, aes(x = x, y = pdf)) +
+  geom_line(size = 1) +
+  facet_wrap(~ theta, nrow = 2, scales = "free_y",
+             labeller = label_both) +
+  labs(title = "PDF f(x) = θ (1 - x)^{θ-1}",
+       subtitle = "Plots for θ = 0.5 and θ = 5",
+       x = expression(x[i]),
+       y = "Density") +
+  theme_minimal()
+```
+
+### Part b (5 points)
+
+Give the likelihood $L(\theta|\boldsymbol{x})$ and log-likelihood $\ell(\theta|\boldsymbol{x})$ functions in this situation.
+
+Likelihood: L(theta \| x) = prod\_{i=1}\^n theta \* (1 - xi)\^(theta - 1) = theta\^n \* prod\_{i=1}\^n (1 - xi)\^(theta - 1) = theta\^n \* \[ prod\_{i=1}\^n (1 - xi) \]\^(theta - 1) Log-likelihood: l(theta \| x) = n \* log(theta) + (theta - 1) \* sum\_{i=1}\^n log(1 - xi)
+
+### Part c (5 points)
+
+Find the Maximum Likelihood Estimator (MLE) $\hat{\theta}$ for $\theta$.
+
+theta_hat = - n / sum(log(1 - xi))
+
+### Part d (3 points)
+
+Show that your estimator is in fact a maximum. That is, check the second derivative of the log-likelihood.
+
+d2l/dtheta2 = - n / theta\^2 Since n \> 0 and theta\^2 \> 0, d2l/dtheta2 \< 0 for all theta \> 0
+
+### Part e (2 points)
+
+Find the MLE if the data values are given below. Note, the actual $\theta$ value used to generate these data was $\theta=7.3$.
+
+```{r}
+#| label: mle_values
+x <- c(0.0194, 0.0053, 0.2488, 0.0456, 0.2059, 0.0992, 0.1168, 0.3705, 
+       0.2129, 0.018, 0.0464, 0.1401, 0.0759, 0.1588, 0.0334, 0.2931, 
+       0.0662, 0.2292, 0.1581, 0.3462, 0.035, 0.1086, 0.0793, 0.2095, 
+       0.1419, 0.1835, 0.1107, 0.0764, 0.1331, 0.042, 0.0911, 0.1608)
+
+n <- length(x)
+theta_hat <- - n / sum(log(1 - x))
+print(theta_hat)
+```
+
+### Part f (7 points)
+
+To get an idea of how variable the maximum likelihood estimator is in this case, let's generate many samples of size 32 from this distribution (which is a Beta distribution with parameters $1$ and $\theta$, but you don't really need to know that). We can do this by using `rbeta(32, 1, 7.3)`.
+
+Using the code below, generate at least 10,000 samples this way, compute the MLE for each, and then plot a histogram of the values using ggplot. Plot a vertical line at the true $\theta$ value of 7.3 (you can use `geom_vline(xintercept = 7.3)` for this). On the plot somewhere, indicate what the standard deviation in those estimates is. Of course, this code is incomplete, so you'll have to complete it. Once you do, make sure to change the `eval` option to `true`.
+
+Once you've completed the code for the samples of size 32, repeat this but instead of taking samples of size 32, take samples of size 100. How does this change the histogram, where the distribution is centered, and the standard deviation of the estimates, if at all?
+
+```{r}
+#| label: mle_sim_32
+#| eval: false # Change this to true once you fill in the code
+#| fig-width: 6
+#| fig-height: 5
+#| out-width: "70%"
+#| warning: false
+set.seed(2026)
+theta_hat <- rep(0, 10000) # Initialize the vector
+for(i in 1:10000) {
+  x_sim <- rbeta(32, 1, 7.3)
+  theta_hat[i] <- -32 / sum(log(1 - x_sim))
+}
+
+sd_theta <- sd(theta_hat)
+
+ggplot(data.frame(theta_hat = theta_hat), 
+       aes(x = theta_hat)) +
+  geom_histogram(bins = 50) +
+  geom_vline(xintercept = 7.3, linetype = "dashed") +
+  annotate("text", 
+           x = max(theta_hat), 
+           y = Inf, 
+           label = paste("SD =", round(sd_theta, 3)),
+           vjust = 2, hjust = 1) +
+  labs(title = "Histogram of MLEs (n = 32)",
+       x = expression(hat(theta)),
+       y = "Count") +
+  theme_minimal()
+```
+
+# Problem 3 (31 points)
+
+We implemented optimization to maximize the likelihood for a Poisson regression problem in the notes to estimate the $\beta$ (intercept and slope) values. Let's do something similar for find the $\boldsymbol{\beta}$ vector by maximizing the likelihood in logistic regression.
+
+In logistic regression, we attempt to predict the probability of a success for a given case. We can use the Bernoulli random variable for this. For a Bernoulli random variable, $P(Y=y_i) = p_i^{y_i}(1-p_i)^{1-y_i}$ for $y_i=0,1$ where $p_i$ is the probability of a success. In our case, for logistic regression, we have $\text{logit}(p_i)=\ln\left(\dfrac{p_i}{1-p_i}\right)=\mathbf{X}_i\boldsymbol{\beta}$. That means $p_i = \dfrac{\exp(\mathbf{X}_i\boldsymbol{\beta})}{1+\exp(\mathbf{X}_i\boldsymbol{\beta})}$.
+
+The likelihood function, $L(\boldsymbol{\beta}|\mathbf{X},\boldsymbol{y})$, for the logistic regression for a sample of size $n$ is \begin{align*}
+L(\boldsymbol{\beta}|\mathbf{X},\boldsymbol{y}) &=\prod_{i=1}^n p_i^{y_i}(1-p_i)^{1-y_i}\\
+&=\prod_{i=1}^n\left[\dfrac{\exp(\mathbf{X}_i\boldsymbol{\beta})}{1+\exp(\mathbf{X}_i\boldsymbol{\beta})}\right]^{y_i}\left(1-\left[\dfrac{\exp(\mathbf{X}_i\boldsymbol{\beta})}{1+\exp(\mathbf{X}_i\boldsymbol{\beta})}\right]\right)^{1-y_i}
+\end{align*}
+
+### Part a (7 points)
+
+Using the above likelihood, show that the log likelihood function is $$
+\ell(\boldsymbol{\beta}|\mathbf{X},\boldsymbol{y})=\sum_{i=1}^ny_i\ln\left(\dfrac{\exp(\mathbf{X}_i\boldsymbol{\beta})}{1+\exp(\mathbf{X}_i\boldsymbol{\beta})}\right) + \sum_{i=1}^n(1-y_i)\ln\left(\dfrac{1}{1+\exp(\mathbf{X}_i\boldsymbol{\beta})}\right)
+$$ and then show it can be equivalently written $$
+\ell(\boldsymbol{\beta}|\mathbf{X},\boldsymbol{y}) = \sum_{i=1}^ny_i(\mathbf{X}_i\boldsymbol{\beta}) - \sum_{i=1}^n\ln\Big(1 + \exp(\mathbf{X}_i\boldsymbol{\beta})\Big)
+$$ using properties of logarithms.
+
+Starting from: L(β \| X, y) = prod\_{i=1}\^n p_i\^{y_i} (1 - p_i)\^{1 - y_i} with p_i = exp(X_i β) / (1 + exp(X_i β))
+
+Log-likelihood: l(β \| X, y) = sum\_{i=1}\^n \[ y_i \* log( exp(X_i β) / (1 + exp(X_i β)) ) + (1 - y_i) \* log( 1/(1 + exp(X_i β)) ) \]
+
+Use log(a/b) = log a - log b and log(1) = 0: = sum\_{i=1}\^n \[ y_i \* ( X_i β - log(1 + exp(X_i β)) ) + (1 - y_i) \* ( - log(1 + exp(X_i β)) ) \]
+
+Combine terms: = sum\_{i=1}\^n \[ y_i X_i β - y_i log(1 + exp(X_i β)) - (1 - y_i) log(1 + exp(X_i β)) \] = sum\_{i=1}\^n \[ y_i X_i β - (y_i + 1 - y_i) log(1 + exp(X_i β)) \] = sum\_{i=1}\^n \[ y_i X_i β - log(1 + exp(X_i β)) \] So: l(β \| X, y) = sum\_{i=1}\^n y_i (X_i β) - sum\_{i=1}\^n log(1 + exp(X_i β)) \### Part b (6 points) Find the gradient of the log likelihood if we have three $\beta$'s. That is, if $\mathbf{X}_i\boldsymbol{\beta}=\beta_0+\beta_1x_{i1}+\beta_2x_{i2}$. l(β) = sum_i \[ y_i (X_i β) - log(1 + exp(X_i β)) \]
+
+The gradient vector is (d l / d beta_j) = sum_i X\_{ij} ( y_i - p_i ), where p_i = exp(X_i β) / (1 + exp(X_i β))
+
+For the 3-element beta (beta0,beta1,beta2): ∂l/∂β0 = sum_i 1 \* (y_i - p_i) ∂l/∂β1 = sum_i x\_{i1} \* (y_i - p_i) ∂l/∂β2 = sum_i x\_{i2} \* (y_i - p_i) /mnt/chromeos/removable/Backup Plus/MATH_3190_Datasets/adult.data \### Part c (4 points) In Homework 3, Problem 2, part a, you read in the `adult` dataset (from the UC Irvine [database](https://archive.ics.uci.edu/dataset/2/adult)). This is the one that we used to predict whether a person makes over \$50K a year based on some other variables. The data came from the Census Bureau in 1994 and can be found in the Data folder in my Math3190_S26 GitHub repo. More info on the dataset can be found in the "adult.names" file.
+
+Read in the dataset and put column names like you did in HW 3. Then fit a logistic regression model using the `glm()` function that predicts salary from age/10 and sex. Note, we should divide the age by 10 in our model because this makes the gradient descent more stable (for whatever reason). We can divide by 10 in the `glm()` function by wrapping it in the `I()` function. Like this: `glm(salary ~ I(age/10) + sex, data = adult, family = binomial)`.
+
+```{r}
+library(utils)
+
+data <- read.csv("~/MATH_3190/Math_3190_Assignments/Homework/HW4/adult.data")
+colnames(data) <- c("age","workclass","fnlwgt","education","education_num","marital_status",
+                     "occupation","relationship","race","sex","capital_gain","capital_loss",
+                     "hours_per_week","native_country","salary")
+
+data$salary <- trimws(data$salary)
+data$sex <- trimws(data$sex)
+data$salary <- factor(data$salary, levels = c("<=50K", ">50K"))
+fit_glm <- glm(salary ~ I(age/10) + sex, data = data, family = binomial)
+summary(fit_glm)
+```
+
+### Part d (4 points)
+
+Define `y`, `x1`, and `x2`. `y` should be a vector of 0's and 1's with a 1 indicating that the person had a salary above \$50,000. `x1` should be a vector that contains all of the age values (divided by 10) and then `x2` should be an indicator variable that indicates if the person is male or not. Taking columns from the matrix obtained using the `model.matrix()` function applied to your logistic regression model you fit in part c may be useful here.
+
+```{r}
+mm <- model.matrix(fit_glm)
+colnames(mm)
+
+y <- as.numeric(data$salary == ">50K")
+
+x1_col <- grep("^I\\(age/10\\)$", colnames(mm))
+if (length(x1_col) == 0) {
+  x1_col <- 2
+}
+x1 <- mm[, x1_col]
+x2_col <- grep("^sex", colnames(mm))
+x2_col <- x2_col[!(x2_col %in% x1_col)]
+if (length(x2_col) == 0) {
+  stop("Could not find sex indicator column in model.matrix; check column names with colnames(mm).")
+}
+x2 <- mm[, x2_col[1]]
+
+head(cbind(y, x1, x2))
+```
+
+### Part e (7 points)
+
+Use the gradient descent function from problem 1 to find estimates for $\beta_0$, $\beta_1$, and $\beta_2$ for predicting salary from age and sex. Enter the following in your function:
+
+-   Use the vector `c(0, 0, 0)` as your starting point.
+-   Instead of starting the step size, $\gamma_k$, at 1, start it at 0.1 to save some time with the line search.
+-   Make sure the maximum number of iterations is at least 200.
+
+You'll know you did this right if the optimized values you end up with match (or are very close to) the estimates from your logistic regression model you fit in part c. This may take a minute or two to run, so you may want to cache this code chunk.
+
+```{R}
+#| cache: true
+X <- mm  
+
+start_beta <- c(0, 0, 0)
+loglik <- function(beta) {
+  eta <- X %*% beta
+  sum(y * eta - log(1 + exp(eta)))
+}
+grad <- function(beta) {
+  eta <- X %*% beta
+  p <- 1 / (1 + exp(-eta))
+  as.vector(t(X) %*% (y - p))
+}
+
+gradient_ascent <- function(beta0, X, y, gamma0 = 0.1, maxit = 1000, tol = 1e-8) {
+  beta <- beta0
+  gamma <- gamma0
+  for (k in seq_len(maxit)) {
+    g <- grad(beta)
+    if (max(abs(g)) < tol) break
+        step <- gamma
+    c <- 1e-4
+    rho <- 0.5
+    ll_old <- loglik(beta)
+    inner_it <- 0
+    repeat {
+      beta_new <- beta + step * g
+      ll_new <- loglik(beta_new)
+      if (ll_new >= ll_old + c * step * sum(g * g)) break
+      step <- step * rho
+      inner_it <- inner_it + 1
+      if (inner_it > 100 || step < 1e-12) break
+    }
+    beta <- beta_new
+    if (max(abs(step * g)) < tol) break
+  }
+  list(beta = as.vector(beta), logLik = loglik(beta), iter = k)
+}
+
+res_gd <- gradient_ascent(start_beta, X, y, gamma0 = 0.1, maxit = 1000, tol = 1e-8)
+
+res_gd$beta
+res_gd$logLik
+res_gd$iter
+
+coef_glm <- coef(fit_glm)
+list(gradient_ascent = res_gd$beta, glm_coef = coef_glm)
+```
+
+### Part f (3 points)
+
+Use the `optim()` function in **R** to find the estimate for the $\beta$'s here. This should be much faster since this function is much better optimized (no pun intended). The results here should also be very close to the numbers we obtained for the slopes in the model we fit in part c, but may not match exactly due to different stopping criteria.
+
+```{r}
+neg_loglik <- function(beta, X, y) {
+  eta <- X %*% beta
+  -sum(y * eta - log(1 + exp(eta)))
+}
+neg_grad <- function(beta, X, y) {
+  eta <- X %*% beta
+  p <- 1 / (1 + exp(-eta))
+  - as.vector(t(X) %*% (y - p))
+}
+
+start <- c(0, 0, 0)
+opt_res <- optim(par = start,
+                 fn = neg_loglik,
+                 gr = neg_grad,
+                 X = X,
+                 y = y,
+                 method = "BFGS",
+                 control = list(maxit = 2000, reltol = 1e-8),
+                 hessian = TRUE)
+
+opt_res$par
+list(optim_par = opt_res$par, glm_coef = coef_glm)
+opt_res$convergence
+```
