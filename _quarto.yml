@@ -2,8 +2,9 @@ project:
   type: website
   output-dir: docs
 website:
-  title: "Lab_3"
+  title: "Toby Tebbs Data Science Project Portfolio"
   navbar:
+    background: "#40E0D0"
     left:
       - href: index.qmd
         text: Home
@@ -26,7 +27,9 @@ website:
 
 format:
   html:
-    theme: darkly
+    theme: 
+      - darkly
+      - custom_theme.scss
     css: styles.css
     toc: true
 

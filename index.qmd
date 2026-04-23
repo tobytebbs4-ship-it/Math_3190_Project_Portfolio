@@ -1,11 +1,15 @@
 ---
-title: "Lab_3"
+title: "Data Science Portfolio"
 ---
 
-This is a Quarto website.
+Hello!
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+I'm Toby Tebbs, currently a math major at Southern Utah University. This website serves as a portfolio for all of my data science projects, including Homework from my MATH 3190 class, and more as time passes!
 
 ```{r}
-1 + 1
+                    #     #
+                
+                #           #
+                 #         #
+                  #########
 ```

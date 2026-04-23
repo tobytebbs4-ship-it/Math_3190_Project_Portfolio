@@ -1,0 +1,34 @@
+/*-- scss:defaults --*/
+
+// Miku Palette
+$teal: #39C5BB;
+$pink: #E3507A;
+$dark: #212121;
+$grey: #323336;
+
+// Bootstrap Variable Overrides
+$primary: $teal;
+$body-bg: $dark;
+$body-color: #f8f9fa;
+$navbar-bg: $grey;
+$navbar-hl: $teal;
+$link-color: $teal;
+
+/*-- scss:rules --*/
+
+// Add a glowing effect to the navbar title
+.navbar-title {
+  color: $teal !important;
+  text-shadow: 0 0 10px rgba(57, 197, 187, 0.5);
+}
+
+// Custom button styling
+.btn-primary {
+  border-color: $pink;
+  background-color: transparent;
+  color: $pink;
+  &:hover {
+    background-color: $pink;
+    color: white;
+  }
+}
