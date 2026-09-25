@@ -1,0 +1,27 @@
+project:
+  type: website
+  output-dir: docs
+website:
+  title: "Toby Tebbs | Quantitative & Data Science Portfolio"
+  navbar:
+    background: "#172033"
+    foreground: "#ffffff"
+    left:
+      - href: index.qmd
+        text: Home
+      - href: coursework.qmd
+        text: Coursework Archive
+    right:
+      - icon: github
+        href: "https://github.com/tobytebbs4-ship-it/Math_3190_Project_Portfolio"
+        aria-label: GitHub
+format:
+  html:
+    theme:
+      - cosmo
+      - custom_theme.scss
+    css: styles.css
+    toc: true
+    page-layout: full
+    smooth-scroll: true
+editor: visual

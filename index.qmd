@@ -1,0 +1,90 @@
+---
+title: "Quantitative & Data Science Portfolio"
+subtitle: "Selected work from MATH 3190 — Fundamentals of Data Science"
+---
+
+## About
+
+I'm Toby Tebbs, a mathematics student at Southern Utah University interested in quantitative research, statistical modeling, and computational data analysis.
+
+This portfolio collects selected work from **MATH 3190: Fundamentals of Data Science**. The assignments below are presented as coursework, with the original problem statements, code, analysis, and results preserved. They cover statistical inference, numerical methods, regression, dimensionality reduction, Bayesian methods, machine learning, and time-series forecasting.
+
+::: {.callout-note}
+### For a quick overview
+The strongest quantitative examples are **Numerical Methods & Optimization**, **Statistical Inference & Regression**, **Regularization & Generalized Linear Models**, **Bayesian Inference & MCMC**, and **Time-Series Analysis & Forecasting**.
+:::
+
+## Selected Work
+
+::: {#numerical-methods .card}
+### Numerical Methods & Optimization
+
+**Homework 4**  
+Root finding, gradient-based optimization, numerical methods, and maximum-likelihood calculations.
+
+[View analysis →](Homework/HW4/Homework_4.qmd)
+:::
+
+::: {#statistical-inference .card}
+### Statistical Inference & Regression
+
+**Homework 5**  
+Bootstrap inference, confidence and prediction intervals, regression, weighting, and uncertainty analysis.
+
+[View analysis →](Homework/HW5/Homework_5.qmd)
+:::
+
+::: {#regularization .card}
+### Regularization & Generalized Linear Models
+
+**Homework 6**  
+Ridge, LASSO, elastic net, Poisson regression, model diagnostics, and overdispersion.
+
+[View analysis →](Homework/HW6/Homework%206.qmd)
+:::
+
+::: {#multivariate .card}
+### Dimensionality Reduction & Multivariate Modeling
+
+**Homework 7**  
+PCA, PLS, multicollinearity, VIF, UMAP, and predictive model comparison.
+
+[View analysis →](Homework/HW7/Homework%207.qmd)
+:::
+
+::: {#bayesian .card}
+### Bayesian Inference & MCMC
+
+**Homework 8**  
+Posterior inference, credible intervals, Monte Carlo sampling, MCMC diagnostics, and autocorrelation.
+
+[View analysis →](Homework/HW8/Homework%208.qmd)
+:::
+
+::: {#classification .card}
+### Classification & Machine Learning
+
+**Homework 9**  
+Logistic regression, naive Bayes, kernel methods, SVMs, confusion matrices, and model comparison.
+
+[View analysis →](Homework/HW9/Homework%209.qmd)
+:::
+
+::: {#timeseries .card}
+### Time-Series Analysis & Forecasting
+
+**Homework 10**  
+Trend and seasonality, stationarity testing, differencing, ARIMA modeling, residual diagnostics, and forecasting.
+
+[View analysis →](Homework/HW10/Homework%2010.qmd)
+:::
+
+## Coursework Archive
+
+The [coursework archive](coursework.qmd) contains the complete collection, including **Homework 1** and the full original assignment structure. The selected work above is simply the portion most relevant to quantitative and data-science applications.
+
+## Tools & Methods
+
+**Languages:** R, Python  
+**Methods:** statistical inference, regression, regularization, Bayesian inference, MCMC, numerical optimization, PCA/PLS, classification, time-series analysis  
+**Libraries/tools used across the coursework:** tidyverse, caret, glmnet, pls, Quarto, and related statistical computing tools

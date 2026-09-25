@@ -1,0 +1,16 @@
+---
+title: "Coursework Archive"
+---
+
+This page contains the complete MATH 3190 coursework archive. The individual pages retain the original assignment questions, code, analysis, and results.
+
+| Assignment | Main topics |
+|---|---|
+| [Homework 1](Homework/HW1/Homework_1.qmd) | Introductory data science methods |
+| [Homework 4](Homework/HW4/Homework_4.qmd) | Numerical methods, root finding, optimization, maximum likelihood |
+| [Homework 5](Homework/HW5/Homework_5.qmd) | Bootstrap inference, regression, confidence and prediction intervals |
+| [Homework 6](Homework/HW6/Homework%206.qmd) | Ridge, LASSO, elastic net, Poisson regression, diagnostics |
+| [Homework 7](Homework/HW7/Homework%207.qmd) | PCA, PLS, VIF, UMAP, multivariate modeling |
+| [Homework 8](Homework/HW8/Homework%208.qmd) | Bayesian inference, Monte Carlo, MCMC, autocorrelation |
+| [Homework 9](Homework/HW9/Homework%209.qmd) | Logistic regression, naive Bayes, kernel methods, SVMs |
+| [Homework 10](Homework/HW10/Homework%2010.qmd) | Time-series analysis, stationarity, ARIMA, forecasting |

@@ -1,0 +1,6 @@
+.navbar { box-shadow: 0 2px 10px rgba(0,0,0,.12); }
+.hero, .quarto-title-block { margin-bottom: 2rem; }
+#quarto-content { max-width: 1100px; margin: 0 auto; }
+.card { background: white; border: 1px solid #e2e6eb; border-radius: 12px; padding: 1.1rem 1.25rem; margin: 0 0 1rem 0; box-shadow: 0 2px 8px rgba(20,30,50,.05); }
+.card h3 { margin-top: 0; }
+.callout-note { border-radius: 10px; }
